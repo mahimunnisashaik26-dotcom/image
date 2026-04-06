@@ -4,8 +4,8 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import requests
 
-# 🔑 ADD YOUR TOKEN HERE
-API_TOKEN = "hf_xxxxxxxxx"
+# 🔑 USE STREAMLIT SECRETS (SAFE)
+API_TOKEN = st.secrets["HF_TOKEN"]
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 API_URL = "https://api-inference.huggingface.co/models/google/vit-base-patch16-224"
 
