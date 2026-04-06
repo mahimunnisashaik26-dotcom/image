@@ -1,5 +1,4 @@
 streamlit
-tensorflow
-pillow
-matplotlib
 numpy
+Pillow
+tensorflow-cpu
