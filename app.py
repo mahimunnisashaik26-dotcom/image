@@ -56,14 +56,9 @@ elif option == "Use Camera":
 # REAL PREDICTION FUNCTION
 # =========================
 def real_predict(img_bytes):
-    for i in range(3):  # retry 3 times
+    for i in range(3):
         try:
-            response = requests.post(
-                API_URL,
-                headers=headers,
-                data=img_bytes,
-                timeout=30
-            )
+            response = requests.post(API_URL, headers=headers, data=img_bytes, timeout=30)
 
             if response.status_code == 503:
                 return ["Model loading... Try again"], [0]
@@ -79,6 +74,7 @@ def real_predict(img_bytes):
             pass
 
     return ["Network Error / Try Again"], [0]
+
 # =========================
 # MAIN LOGIC
 # =========================
@@ -89,21 +85,28 @@ if uploaded_file is not None:
 
     st.image(img, caption="Selected Image", use_container_width=True)
 
-    # 🔍 REAL AI PREDICTION
     with st.spinner("Analyzing image..."):
         labels, probs = real_predict(img_bytes)
 
+    # ✅ FIX: Proper prediction display
     st.subheader("🔍 Predictions")
-    for label, prob in zip(labels, probs):
-        st.write(f"{label}: {prob:.2f}")
 
-    # 📊 Bar chart
-    st.subheader("📊 Analysis")
-    fig, ax = plt.subplots()
-    colors = ['red', 'blue', 'green', 'orange', 'purple']
-    ax.bar(labels, probs, color=colors)
-    plt.xticks(rotation=30)
-    st.pyplot(fig)
+    if labels[0] in ["Network Error / Try Again", "Model loading... Try again"]:
+        st.error(labels[0])
+    else:
+        for label, prob in zip(labels, probs):
+            st.write(f"{label}: {prob:.2f}")
+
+    # ✅ FIX: Show chart ONLY if valid
+    if labels[0] not in ["Network Error / Try Again", "Model loading... Try again"]:
+        st.subheader("📊 Analysis")
+        fig, ax = plt.subplots()
+        colors = ['red', 'blue', 'green', 'orange', 'purple']
+        ax.bar(labels, probs, color=colors)
+        plt.xticks(rotation=30)
+        st.pyplot(fig)
+    else:
+        st.warning("⚠️ No analysis available. Please try again.")
 
     # Save history
     if st.session_state.last_image != img_bytes:
@@ -123,11 +126,12 @@ if show_history:
     for item in st.session_state.history[::-1]:
         st.image(item["image"], width=200)
 
-        for label, prob in zip(item["labels"], item["probs"]):
-            st.write(f"{label}: {prob:.2f}")
+        if item["labels"][0] not in ["Network Error / Try Again", "Model loading... Try again"]:
+            for label, prob in zip(item["labels"], item["probs"]):
+                st.write(f"{label}: {prob:.2f}")
 
-        fig, ax = plt.subplots()
-        colors = ['red', 'blue', 'green', 'orange', 'purple']
-        ax.bar(item["labels"], item["probs"], color=colors)
-        plt.xticks(rotation=30)
-        st.pyplot(fig)
+            fig, ax = plt.subplots()
+            colors = ['red', 'blue', 'green', 'orange', 'purple']
+            ax.bar(item["labels"], item["probs"], color=colors)
+            plt.xticks(rotation=30)
+            st.pyplot(fig)
