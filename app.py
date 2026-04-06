@@ -7,8 +7,7 @@ import requests
 # 🔑 USE STREAMLIT SECRETS (SAFE)
 API_TOKEN = st.secrets["HF_TOKEN"]
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
-API_URL = "https://api-inference.huggingface.co/models/google/vit-base-patch16-224"
-
+API_URL = "https://api-inference.huggingface.co/models/microsoft/resnet-50"
 st.title("📸 Image Classification App")
 
 # ✅ SESSION STATE
