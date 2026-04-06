@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import requests
 
 # 🔑 ADD YOUR TOKEN HERE
-API_TOKEN = "hf_xxxxxxxxxxxxxxxxx"
+API_TOKEN = "hf_xxxxxxxxx"
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 API_URL = "https://api-inference.huggingface.co/models/google/vit-base-patch16-224"
 
