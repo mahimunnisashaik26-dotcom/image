@@ -56,24 +56,29 @@ elif option == "Use Camera":
 # REAL PREDICTION FUNCTION
 # =========================
 def real_predict(img_bytes):
-    try:
-        response = requests.post(API_URL, headers=headers, data=img_bytes, timeout=30)
+    for i in range(3):  # retry 3 times
+        try:
+            response = requests.post(
+                API_URL,
+                headers=headers,
+                data=img_bytes,
+                timeout=30
+            )
 
-        # If model is loading
-        if response.status_code == 503:
-            return ["Model loading... Try again"], [0]
+            if response.status_code == 503:
+                return ["Model loading... Try again"], [0]
 
-        result = response.json()
+            result = response.json()
 
-        if isinstance(result, list):
-            labels = [item["label"] for item in result[:5]]
-            probs = [item["score"] for item in result[:5]]
-            return labels, probs
-        else:
-            return ["Error"], [0]
+            if isinstance(result, list):
+                labels = [item["label"] for item in result[:5]]
+                probs = [item["score"] for item in result[:5]]
+                return labels, probs
 
-    except requests.exceptions.RequestException:
-        return ["Network Error / Retry"], [0]
+        except requests.exceptions.RequestException:
+            pass
+
+    return ["Network Error / Try Again"], [0]
 # =========================
 # MAIN LOGIC
 # =========================
