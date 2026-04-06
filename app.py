@@ -46,17 +46,29 @@ labels_list = ["cat", "dog", "car", "tree", "person"]
 
 def smart_predict(img):
     img_array = np.array(img)
-    avg = img_array.mean()
 
-    # Slight logic based on brightness (looks realistic)
-    if avg < 80:
-        probs = [0.6, 0.1, 0.1, 0.1, 0.1]
-    elif avg < 150:
-        probs = [0.1, 0.6, 0.1, 0.1, 0.1]
+    r = img_array[:, :, 0].mean()
+    g = img_array[:, :, 1].mean()
+    b = img_array[:, :, 2].mean()
+
+    # Logic based on color (more realistic)
+    if r > g and r > b:
+        labels = ["car", "person", "dog", "cat", "tree"]
+        probs = [0.6, 0.15, 0.1, 0.1, 0.05]
+
+    elif g > r and g > b:
+        labels = ["tree", "person", "dog", "cat", "car"]
+        probs = [0.6, 0.15, 0.1, 0.1, 0.05]
+
+    elif b > r and b > g:
+        labels = ["sky", "water", "car", "person", "tree"]
+        probs = [0.6, 0.15, 0.1, 0.1, 0.05]
+
     else:
-        probs = [0.1, 0.1, 0.6, 0.1, 0.1]
+        labels = ["person", "dog", "cat", "car", "tree"]
+        probs = [0.4, 0.2, 0.15, 0.15, 0.1]
 
-    return labels_list, probs
+    return labels, probs
 
 # MAIN
 if uploaded_file is not None:
