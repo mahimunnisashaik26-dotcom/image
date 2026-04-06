@@ -2,7 +2,12 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-import random
+import requests
+
+# 🔑 ADD YOUR TOKEN HERE
+API_TOKEN = "hf_xxxxxxxxxxxxxxxxx"
+headers = {"Authorization": f"Bearer {API_TOKEN}"}
+API_URL = "https://api-inference.huggingface.co/models/google/vit-base-patch16-224"
 
 st.title("📸 Image Classification App")
 
@@ -48,14 +53,18 @@ elif option == "Use Camera":
     uploaded_file = st.camera_input("📷 Take a picture")
 
 # =========================
-# FAKE PREDICTION (NO TF)
+# REAL PREDICTION FUNCTION
 # =========================
-labels_list = ["cat", "dog", "car", "tree", "person"]
+def real_predict(img_bytes):
+    response = requests.post(API_URL, headers=headers, data=img_bytes)
+    result = response.json()
 
-def fake_predict():
-    probs = np.random.rand(5)
-    probs = probs / probs.sum()
-    return labels_list, probs
+    if isinstance(result, list):
+        labels = [item["label"] for item in result[:5]]
+        probs = [item["score"] for item in result[:5]]
+        return labels, probs
+    else:
+        return ["Error"], [0]
 
 # =========================
 # MAIN LOGIC
@@ -67,13 +76,15 @@ if uploaded_file is not None:
 
     st.image(img, caption="Selected Image", use_container_width=True)
 
-    labels, probs = fake_predict()
+    # 🔍 REAL AI PREDICTION
+    with st.spinner("Analyzing image..."):
+        labels, probs = real_predict(img_bytes)
 
     st.subheader("🔍 Predictions")
     for label, prob in zip(labels, probs):
         st.write(f"{label}: {prob:.2f}")
 
-    # Bar chart
+    # 📊 Bar chart
     st.subheader("📊 Analysis")
     fig, ax = plt.subplots()
     colors = ['red', 'blue', 'green', 'orange', 'purple']
