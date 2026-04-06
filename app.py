@@ -25,6 +25,7 @@ if st.sidebar.button("🆕 New Chat"):
 
 if st.sidebar.button("🧹 Clear Chat"):
     st.session_state.history = []
+    st.rerun()
 
 if st.sidebar.button("🗑️ Delete History"):
     st.session_state.history = []
