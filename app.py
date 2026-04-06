@@ -30,6 +30,7 @@ if st.sidebar.button("🧹 Clear Chat"):
 if st.sidebar.button("🗑️ Delete History"):
     st.session_state.history = []
     st.sidebar.success("History deleted!")
+    st.rerun()
 
 show_history = st.sidebar.checkbox("📜 Show History")
 
