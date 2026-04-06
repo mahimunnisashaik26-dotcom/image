@@ -61,7 +61,7 @@ def real_predict(img_bytes):
             API_URL,
             headers=headers,
             data=img_bytes,
-            timeout=60   # 🔥 increase timeout
+            timeout=60
         )
 
         if response.status_code == 503:
@@ -98,17 +98,17 @@ if uploaded_file is not None:
     with st.spinner("Analyzing image..."):
         labels, probs = real_predict(img_bytes)
 
-    # ✅ FIX: Proper prediction display
+    # ✅ Predictions
     st.subheader("🔍 Predictions")
 
-    if labels[0] in ["Network Error / Try Again", "Model loading... Try again"]:
+    if "Error" in labels[0] or "loading" in labels[0] or "Timeout" in labels[0]:
         st.error(labels[0])
     else:
         for label, prob in zip(labels, probs):
             st.write(f"{label}: {prob:.2f}")
 
-    # ✅ FIX: Show chart ONLY if valid
-    if labels[0] not in ["Network Error / Try Again", "Model loading... Try again"]:
+    # ✅ Chart only if valid
+    if not ("Error" in labels[0] or "loading" in labels[0] or "Timeout" in labels[0]):
         st.subheader("📊 Analysis")
         fig, ax = plt.subplots()
         colors = ['red', 'blue', 'green', 'orange', 'purple']
@@ -136,7 +136,7 @@ if show_history:
     for item in st.session_state.history[::-1]:
         st.image(item["image"], width=200)
 
-        if item["labels"][0] not in ["Network Error / Try Again", "Model loading... Try again"]:
+        if not ("Error" in item["labels"][0] or "loading" in item["labels"][0] or "Timeout" in item["labels"][0]):
             for label, prob in zip(item["labels"], item["probs"]):
                 st.write(f"{label}: {prob:.2f}")
 
